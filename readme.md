@@ -1,6 +1,6 @@
 # Junicorn Tracker
 
-An instagram tracker that can be deployed to a RaspberryPi. This repository contains the ansible script that can be used to configure a RaspberryPi with the cron jobs needed to backup an Instagram profile's posts and stories. One cron job runs the Instaloader python package to download instagram stories and posts. A second cron job then syncs the files to a Nextcloud file server.
+This is an Instagram tracker that I deployed to a RaspberryPi. This repository contains the ansible script that I used to configure the RaspberryPi and deploy the cron jobs needed to backup an Instagram profile's posts and stories. One cron job runs the Instaloader python package to download instagram stories and posts. A second cron job then syncs the files to a Nextcloud file server.
 
 ## Setup
 
