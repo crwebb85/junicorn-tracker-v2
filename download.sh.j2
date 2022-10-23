@@ -1,0 +1,26 @@
+echo "Start Downloading Stories:" >> {{ nextcloud_download_path }}/logs.log
+date >> {{ nextcloud_download_path }}/logs.log
+#download stories
+python3 -m instaloader \
+    {{ instagram_profile }} \
+    --dirname-pattern {{ nextcloud_download_path }}/{profile}/stories \
+    --login "{{ instagram_username }}" \
+    --fast-update \
+    --no-posts \
+    --no-profile-pic \
+    --stories \
+    -p "{{ instagram_password }}" >> {{ nextcloud_download_path }}/logs.log
+
+echo "End Downloading Stories:" >> {{ nextcloud_download_path }}/logs.log
+
+echo "Start Downloading Posts:" >> {{ nextcloud_download_path }}/logs.log
+date >> {{ nextcloud_download_path }}/logs.log
+#download posts
+python3 -m instaloader \
+    {{ instagram_profile }} \
+    --dirname-pattern {{ nextcloud_download_path }}/{profile}/posts \
+    --login "{{ instagram_username }}" \
+    --fast-update \
+    -p "{{ instagram_password }}" >> {{ nextcloud_download_path }}/logs.log
+
+echo "End Downloading Posts:" >> {{ nextcloud_download_path }}/logs.log

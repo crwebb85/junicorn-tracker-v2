@@ -1,0 +1,75 @@
+
+---
+- name: Setup Instagram Tracker
+  hosts: all
+  vars_files:
+    - "./vars/env.yml"
+  vars:
+    nextcloud_dir: ~/nextcloud
+    nextcloud_download_path: "{{ nextcloud_dir }}/InstagramTracker"  
+
+  tasks:
+  - name: Create script directory
+    ansible.builtin.file:
+      path: ~/scripts
+      state: directory
+      mode: 0755
+
+  - name: Create script directory
+    ansible.builtin.file:
+      path: "{{ nextcloud_dir }}"
+      state: directory
+      mode: 0755
+
+
+  - name: Add Nextcloud client package repository
+    ansible.builtin.apt_repository:
+      repo: 'ppa:nextcloud-devs/client'
+      state: present
+    become: true
+
+  - name: Install Nextcloud client
+    ansible.builtin.package:
+      name: nextcloud-client 
+      state: latest
+    become: true
+
+  - name: Install PIP python package manager
+    ansible.builtin.package:
+      name: python3-pip
+      state: present
+    become: true
+
+  - name: Install instaloader python package
+    ansible.builtin.pip:
+      name: instaloader
+      state: latest
+
+  - name: Check flock is installed
+    # Will error out if flock is not installed
+    ansible.builtin.shell: flock -V
+    changed_when: False
+
+  - name: Create download.sh script from template
+    ansible.builtin.template:
+      src: "{{ playbook_dir }}/download.sh.j2"
+      dest: ~/scripts/download.sh
+      mode: 'a+x'
+
+  - name: Create sync.sh script from template
+    ansible.builtin.template:
+      src: "{{ playbook_dir }}/sync.sh.j2"
+      dest: ~/scripts/sync.sh
+      mode: 'a+x'
+
+  - name: Configure Nextcloud sync cron job to run every 15 minutes
+    ansible.builtin.cron:
+      name: "sync"
+      minute: "*/15"
+      job: "flock -n ~/scripts/sync.lock ~/scripts/sync.sh" 
+
+  - name: Configure instaloader download cron job to run every 30 minutes
+    ansible.builtin.cron:
+      name: "instaloader download"
+      minute: "*/30"
+      job: "flock -n ~/scripts/download.lock ~/scripts/download.sh" 
